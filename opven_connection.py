@@ -12,16 +12,17 @@ PATH = '/etc/openvpn/ovpn_tcp/'
 VPN_LIST = glob.glob(PATH + 'us*')
 
 class Vpn_connection:
-    def __init__(self):
+    def __init__(self, exit_time):
+        self.VPN_PROFILE = random.choice(VPN_LIST)
+        self._time = exit_time 
         self.run()
 
     def connection(self):
-        VPN_PROFILE = random.choice(VPN_LIST)
-        os.system(f'sudo openvpn --config {VPN_PROFILE} --auth-user-pass /home/davek/.openvpn/profile')
+        os.system(f'sudo openvpn --config {self.VPN_PROFILE} --auth-user-pass /home/davek/.openvpn/profile')
 
     def exition(self):
+        time.sleep(self._time)
         os.system('sudo killall openvpn')
-
 
     def run(self):
         p1 = Process(target=self.connection)
@@ -34,10 +35,7 @@ class Vpn_connection:
         p2.join()
 
 
-a = Vpn_connection()
-
-while True:
-    try:
-        a.run()
-    except:
-        continue
+vpn_h = Vpn_connection(exit_time=10)
+last_profile = vpn_h.VPN_PROFILE
+_ , filename = os.path.split(last_profile)
+print(len(VPN_LIST))
